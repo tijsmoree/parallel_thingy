@@ -1,0 +1,6 @@
+# Note that all hosts MUST be running exactly the same version of MPI
+# and use the same compiler !!
+
+prz03 slots=3
+prz04 slots=3
+prz05 slots=3

@@ -1,0 +1,37 @@
+
+SHELL		= /bin/sh
+ifeq "$(shell gcc -dumpmachine)" "x86_64-slackware-linux"
+# OPENMPI         = /opt32/openmpi
+  OPENMPI      = /opt64/openmpi
+else
+  OPENMPI      = /usr
+endif
+CC		= $(OPENMPI)/bin/mpicc
+CXX		= $(OPENMPI)/bin/mpicp
+F77		= $(OPENMPI)/bin/mpif77
+F90		= $(OPENMPI)/bin/mpif90
+RM		= /bin/rm -f
+
+CFLAGS		= -O -Wall
+CXXFLAGS	= -O -Wall
+FFLAGS		= -O
+F90FLAGS	= -O
+LDFLAGS		= 
+
+#
+# Apparently, some versions of make do not have default .cc.o rules (!)
+#
+
+.SUFFIXES: .cc .o .f90
+
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $<
+
+.f.o:
+	$(F77) -c $(FFLAGS) $<
+
+.f90.o:
+	$(F90) -c $(F90FLAGS) $<

@@ -1,0 +1,22 @@
+	  MIDPOINT INTEGRATION using MPI, Kees Lemmens, Febr 2014
+	  ========================================================
+	       
+In this example we split the integration interval into subintervals
+and let each processor compute the area for it's local interval using
+a Midpoint integration on the subinterval.
+
+After that we use MPI_Reduce to collect and sum all local values on
+processor 0.
+
+NOTES :
+
+1) There may be small roundoff errors/differences if you compare the
+   sequential and the mpi version.
+
+2) But, for a higher number of steps the result must converge to the
+   value we obtain using the sequential algorithm.
+
+3) Note there are no explicit master and slave processes in this
+   example: each process has an equal task, except for the global
+   result being collected and printed on the first process.
+

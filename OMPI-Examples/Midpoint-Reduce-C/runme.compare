@@ -1,0 +1,21 @@
+
+PRG=mpimidpointintegrate
+make
+
+echo "1 processor :"
+mpirun -n 1 ./$PRG 0 1 200000000
+
+echo "2 processors :"
+mpirun -n 2 ./$PRG 0 1 200000000
+
+echo "4 processors :"
+mpirun -n 4 ./$PRG 0 1 200000000
+
+echo "8 processors :"
+mpirun -n 8 ./$PRG 0 1 200000000
+
+echo
+echo "On a DUAL core it should be about 2x faster for np >= 2"
+echo "On a QUAD core it should be about 4x faster for np >= 4"
+echo "On an OCT core it should be about 8x faster for np >= 8"
+echo "Note that 2 threads per core is not the same as 2 cores !"

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+test -r /opt64/mpi4py3/scripts/mpi4py.bashrc && source /opt64/mpi4py3/scripts/mpi4py.bashrc # Intel
+test -r /opt/mpi4py3/scripts/mpi4py.bashrc   && source /opt/mpi4py3/scripts/mpi4py.bashrc   # ARM
+
+./ompirun.sh python3 matrixsum.py

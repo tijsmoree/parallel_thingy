@@ -1,0 +1,26 @@
+
+SHELL		= /bin/sh
+
+LAMHOME		= /opt/lam-mpibase
+
+CC		= $(LAMHOME)/bin/hcc
+CXX		= $(LAMHOME)/bin/hcp
+F77		= $(LAMHOME)/bin/hf77
+RM		= /bin/rm -f
+
+CFLAGS		= -O 
+CXXFLAGS	= -O 
+FFLAGS		= -O 
+USER_LDFLAGS	= 
+LIBBIND		= $(USER_LDFLAGS)
+
+LDFLAGS		= $(LIBBIND)
+
+#
+# Apparently, some versions of make do not have default .cc.o rules (!)
+#
+
+.SUFFIXES: .cc .o
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $<

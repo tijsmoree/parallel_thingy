@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="MPICourse" Database="">
+  <Project Name="Debugging-C" Path="Debugging-C/Debugging-C.project" Active="No"/>
+  <Project Name="Multiply-C" Path="Multiply-C/Multiply-C.project" Active="Yes"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Project Name="Debugging-C" ConfigName="Debug"/>
+      <Project Name="Multiply-C" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Project Name="Debugging-C" ConfigName="Release"/>
+      <Project Name="Multiply-C" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>
