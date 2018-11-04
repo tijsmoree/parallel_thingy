@@ -26,19 +26,19 @@ int main(int argc, char **argv) {
     if (myRank == 0) {
         printf("Sending %i elements\n", numberOfElementsToSend);
         MPI_Send(&numberOfElementsToSend, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
-        MPI_Send(&myArray, numberOfElementsToSend, MPI_INT, 1, 1, MPI_COMM_WORLD);
+        MPI_Send(myArray, numberOfElementsToSend, MPI_INT, 1, 1, MPI_COMM_WORLD);
 
         MPI_Recv(&numberOfElementsReceived, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
-        MPI_Recv(&myArray, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(myArray, numberOfElementsReceived, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
         printf("Received %i elements\n", numberOfElementsReceived);
     } else {
-        MPI_Recv(&numberOfElementsReceived, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
-        MPI_Recv(&myArray, numberOfElementsReceived, MPI_INT, 1, 1, MPI_COMM_WORLD, &status);
+        MPI_Recv(&numberOfElementsReceived, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(myArray, numberOfElementsReceived, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
         printf("Received %i elements\n", numberOfElementsReceived);
 
         printf("Sending back %i elements\n", numberOfElementsToSend);
-        MPI_Send(&numberOfElementsToSend, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
-        MPI_Send(&myArray, numberOfElementsToSend, MPI_INT, 1, 1, MPI_COMM_WORLD);
+        MPI_Send(&numberOfElementsToSend, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        MPI_Send(myArray, numberOfElementsToSend, MPI_INT, 0, 1, MPI_COMM_WORLD);
     }
 
     MPI_Finalize();
