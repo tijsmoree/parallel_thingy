@@ -15,18 +15,18 @@ int main(int argc, char **argv) {
 
     if (myRank == 0) {
         printf("Sending Ping (# %i)\n", pingCount);
-        MPI_Send(&pingCount, 1, MPI_INT, 1, 12, MPI_COMM_WORLD);
+        MPI_Send(&pingCount, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
 
-        MPI_Recv(&pongCount, 1, MPI_INT, 1, 12, MPI_COMM_WORLD, &status);
+        MPI_Recv(&pongCount, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
 
         printf("Received Pong (# %i)\n", pongCount);
     } else {
-        MPI_Recv(&pingCount, 1, MPI_INT, 0, 12, MPI_COMM_WORLD, &status);
+        MPI_Recv(&pingCount, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 
         printf("Received Ping (# %i)\n", pingCount);
 
         pongCount = -pingCount;
-        MPI_Send(&pongCount, 1, MPI_INT, 0, 12, MPI_COMM_WORLD);
+        MPI_Send(&pongCount, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
         printf("Sending Pong (# %i)\n", pongCount);
     }
 
