@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
         MPI_Send(myArray, numberOfElementsToSend, MPI_INT, 1, 1, MPI_COMM_WORLD);
 
         MPI_Recv(&numberOfElementsReceived, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
-        MPI_Recv(myArray, numberOfElementsReceived, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(myArray, numberOfElementsReceived, MPI_INT, 1, 1, MPI_COMM_WORLD, &status);
         printf("Received %i elements\n", numberOfElementsReceived);
     } else {
         MPI_Recv(&numberOfElementsReceived, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
