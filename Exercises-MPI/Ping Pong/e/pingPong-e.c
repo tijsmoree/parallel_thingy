@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     }
 
     // TODO: Use a loop to vary the message size
-    for (numberOfElementsToSend = 1; numberOfElementsToSend < 100; numberOfElementsToSend += 10) {
+    for (numberOfElementsToSend = 2; numberOfElementsToSend < 1<<26; numberOfElementsToSend = numberOfElementsToSend<<1) {
         if (myRank == 0)
         {
             printf("Rank %2.1i: Sending %i elements\n",
