@@ -26,7 +26,10 @@ int main(int argc, char **argv)
     }
     int numberOfElementsReceived;
 
-    // TODO: Display an error message if too few processes
+    if (numProcs < 2) {
+        printf("Not enough processes\n");
+        exit(1);
+    }
 
     // Have only the first process execute the following code
     if (myRank == 0)
