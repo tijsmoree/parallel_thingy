@@ -3,9 +3,10 @@
 #include <mpi.h>
 
 int main(int argc, char **argv) {
-    int myRank, numProcs, status;
+    int myRank, numProcs;
     int pingCount = 42;
     int pongCount = 0;
+    MPI_Status status;
 
     MPI_Init(&argc, &argv);
     
