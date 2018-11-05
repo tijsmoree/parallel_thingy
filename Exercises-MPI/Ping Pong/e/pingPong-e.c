@@ -33,15 +33,12 @@ int main(int argc, char **argv)
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    // TODO: Use a loop to vary the message size
-    for (numberOfElementsToSend = 2; numberOfElementsToSend < 1<<26; numberOfElementsToSend = numberOfElementsToSend<<1) {
+    for (numberOfElementsToSend = 2; numberOfElementsToSend < 2 * MAX_ARRAY_SIZE; numberOfElementsToSend = numberOfElementsToSend<<1) {
         if (myRank == 0)
         {
             printf("Rank %2.1i: Sending %i elements\n",
                 myRank, numberOfElementsToSend);
 
-            // TODO: Measure the time spent in MPI communication
-            //       (use the variables startTime and endTime)
             startTime = MPI_Wtime();
 
             MPI_Send(myArray, numberOfElementsToSend, MPI_INT, 1, 0,
