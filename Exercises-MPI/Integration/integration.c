@@ -21,8 +21,8 @@ double controller(int c, double (*f)(double x), double x_start, double x_end, in
     int numProcs;
     MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
 
-    double sum = f(x_start);
-    double x[2], y;
+    double sum = 0.0;
+    double x[c], y;
 
     double stepSize = (x_end - x_start)/(double)maxSteps;
     int step;
@@ -32,13 +32,14 @@ double controller(int c, double (*f)(double x), double x_start, double x_end, in
     // I am the controller, distribute the work
     for (step = 0; step < maxSteps + numProcs - 1; step+=c)
     {
-        for (i = 0; i < c; i++)
+        for (i = 0; i < c + 1; i++)
             x[i] = x_start + stepSize*(step + i);
+
         nextRank = step % (numProcs-1) + 1;
         // Receive the result
         if (step / c > numProcs - 2) {
             MPI_Recv(&y, 1, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            sum += stepSize*y;
+            sum += 0.5*stepSize*y;
         }
         // Send the work
         if (step < maxSteps) {
@@ -53,7 +54,7 @@ double controller(int c, double (*f)(double x), double x_start, double x_end, in
 }
 
 void worker(int c, double (*f)(double x)) {
-    double x[2], y;
+    double x[c], y;
     int i;
 
     MPI_Status status;
@@ -69,7 +70,7 @@ void worker(int c, double (*f)(double x)) {
             &status);
         if (status.MPI_TAG == TAG_END) break;
         for (i = 0, y = 0.0; i < c; i++)
-            y += f(x[i]);
+            y += f(x[i]) + f(x[i + 1]);
         // Send back the computed result
         MPI_Send(&y, 1, MPI_DOUBLE, 0, TAG_WORK, MPI_COMM_WORLD);
     }
@@ -108,7 +109,7 @@ int main(int argc, char **argv)
     // Integration domain is [0, 1]
     double x0 = 0.0, x1 = 1.0;
     int maxSteps = 100;
-    int c = 2;
+    int c = 1;
 
     if (myRank == 0)
     {
