@@ -21,7 +21,7 @@ double controller(int c, double (*f)(double x), double x_start, double x_end, in
     int numProcs;
     MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
 
-    double sum = -f(x_end);
+    double sum = 0.0;
     double x[c], y;
 
     double stepSize = (x_end - x_start)/(double)maxSteps;
@@ -39,7 +39,7 @@ double controller(int c, double (*f)(double x), double x_start, double x_end, in
         // Receive the result
         if (step / c > numProcs - 2) {
             MPI_Recv(&y, 1, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            sum += 0.5*stepSize*y;
+            sum += y;
         }
         // Send the work
         if (step < maxSteps) {
@@ -50,7 +50,7 @@ double controller(int c, double (*f)(double x), double x_start, double x_end, in
     for (nextRank = 1; nextRank < numProcs; nextRank++)
         MPI_Send(&nextRank, 0, MPI_INT, nextRank, TAG_END, MPI_COMM_WORLD);
 
-    return sum;
+    return 0.5*stepSize*sum;
 }
 
 void worker(int c, double (*f)(double x)) {
