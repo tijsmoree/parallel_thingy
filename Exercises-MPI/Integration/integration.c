@@ -54,6 +54,7 @@ double controller(int c, double x_start, double x_end, int maxSteps) {
 
 void worker(int c, double (*f)(double x)) {
     double x[2], y;
+    int i;
 
     MPI_Status status;
 
