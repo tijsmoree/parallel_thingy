@@ -36,7 +36,7 @@ double controller(int chunk, double x_start, double x_end, int maxSteps) {
         nextRank = step % (numProcs-1) + 1;
         // Receive the result
         if (step > numProcs - 2) {
-            MPI_Recv(y, 1, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(&y, 1, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             sum += stepSize * y;
         }
         // Send the work
@@ -69,7 +69,7 @@ void worker(int chunk, double (*f)(double x)) {
         for (int i; i < chunk; i++)
             y += f(x[i]);
         // Send back the computed result
-        MPI_Send(y, chunk, MPI_DOUBLE, 0, TAG_WORK, MPI_COMM_WORLD);
+        MPI_Send(&y, chunk, MPI_DOUBLE, 0, TAG_WORK, MPI_COMM_WORLD);
     }
 }
 
