@@ -42,6 +42,11 @@ void swap_halos(int maxXCount, int maxYCount, double *src,
                 int prevRank, int nextRank)
 {
 #define ROW(YY) &src[(YY)*maxXCount]
+    MPI_Send(ROW(maxYCount), maxXCount, MPI_INT, nextRank, 0, MPI_COMM_WORLD);
+    MPI_Recv(ROW(0), maxXCount, MPI_INT, prevRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+    MPI_Send(ROW(0), maxXCount, MPI_INT, prevRank, 0, MPI_COMM_WORLD);
+    MPI_Recv(ROW(maxYCount), maxXCount, MPI_INT, nextRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     // TODO: Send last data row to nextRank
     //       receive first halo data from prevRank
 
@@ -239,6 +244,8 @@ int main(int argc, char **argv)
                                           alpha, relax);
 
         // TODO: Perform global reduction and compute global error value
+        MPI_Reduce(&localError, &error, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+        error = sqrt(error) / (n * myRows);
 
         if (myRank == 0)
             printf("\tError %g\n", error);
@@ -260,6 +267,8 @@ int main(int argc, char **argv)
                                alpha);
 
     // TODO: Perform global reduction and compute absoluteError value
+    MPI_Reduce(&localError, &absoluteError, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    error = sqrt(absoluteError) / (n * myRows);
 
     if (myRank == 0)
         printf("The error of the iterative solution is %g\n", absoluteError);
