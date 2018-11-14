@@ -17,11 +17,11 @@ double func(double x)
     return 4.0 / (1.0 + x*x);
 }
 
-double controller(int c, double x_start, double x_end, int maxSteps) {
+double controller(int c, double (*f)(double x), double x_start, double x_end, int maxSteps) {
     int numProcs;
     MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
 
-    double sum = 0.0;
+    double sum = f(x_start);
     double x[2], y;
 
     double stepSize = (x_end - x_start)/(double)maxSteps;
@@ -88,7 +88,7 @@ double integrate(int c,
 
     if (myRank == 0)
     {
-        sum = controller(c, x_start, x_end, maxSteps);
+        sum = controller(c, f, x_start, x_end, maxSteps);
     }
     else
     {
