@@ -43,7 +43,7 @@ double controller(int c, double (*f)(double x), double x_start, double x_end, in
         }
         // Send the work
         if (step < maxSteps) {
-            MPI_Send(x, c, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
+            MPI_Send(x, c + 1, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
         }
     }
     // Signal workers to stop by sending empty messages with tag TAG_END
@@ -66,7 +66,7 @@ void worker(int c, double (*f)(double x)) {
         // Receive the left and right points of the trapezoid and compute
         // the corresponding function values. If the tag is TAG_END, don't
         // compute but exit.
-        MPI_Recv(x, c, MPI_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD,
+        MPI_Recv(x, c + 1, MPI_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD,
             &status);
         if (status.MPI_TAG == TAG_END) break;
         for (i = 0, y = 0.0; i < c; i++)
