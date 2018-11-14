@@ -21,7 +21,7 @@ double controller(int c, double (*f)(double x), double x_start, double x_end, in
     int numProcs;
     MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
 
-    double sum = 0.0;
+    double sum = -f(x_end);
     double x[c], y;
 
     double stepSize = (x_end - x_start)/(double)maxSteps;
