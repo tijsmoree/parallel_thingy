@@ -25,12 +25,12 @@ double controller(int chunk, double x_start, double x_end, int maxSteps) {
     double x[chunk], y;
 
     double stepSize = (x_end - x_start)/(double)maxSteps;
-    int step;
-    int nextRank = 1;
+    int nextRank;
 
     // I am the controller, distribute the work
-    for (step = 0; step < maxSteps + numProcs - 1; step += chunk)
+    for (int step = 0; step < maxSteps + numProcs - 1; step += chunk)
     {
+        printf("%d\n", step);
         for (int i = 0; i < chunk; i++)
             x[i] = x_start + stepSize * (step + i);
         nextRank = step % (numProcs-1) + 1;
