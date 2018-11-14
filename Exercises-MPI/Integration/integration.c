@@ -34,7 +34,7 @@ double controller(int chunk, double x_start, double x_end, int maxSteps) {
             x[i] = x_start + stepSize * (step + i);
         nextRank = step % (numProcs-1) + 1;
         // Receive the result
-        if (step / chunk > numProcs - 2) {
+        if (step > numProcs - 2) {
             MPI_Recv(&y, 1, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             sum += stepSize * y;
             printf("%d\n", step);
