@@ -38,7 +38,7 @@ double controller(int c, double (*f)(double x), double x_start, double x_end, in
         // Receive the result
         if (step / c > numProcs - 2) {
             MPI_Recv(&y, 1, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            sum += 0.5*stepSize*y;
+            sum += stepSize*y;
         }
         // Send the work
         if (step < maxSteps) {
