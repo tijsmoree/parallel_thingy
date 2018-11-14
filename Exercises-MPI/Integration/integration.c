@@ -17,7 +17,9 @@ double func(double x)
     return 4.0 / (1.0 + x*x);
 }
 
-double controller() {
+double controller(double x_start,
+                  double x_end,
+                  int maxSteps) {
     int numProcs;
     MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
 
@@ -51,7 +53,7 @@ double controller() {
     return sum;
 }
 
-void worker() {
+void worker(double (*f)(double x)) {
     double x[2], y[2];
 
     MPI_Status status;
@@ -85,11 +87,11 @@ double integrate(double (*f)(double x),
 
     if (myRank == 0)
     {
-        sum = controller();
+        sum = controller(x_start, x_end, maxSteps);
     }
     else
     {
-        worker();
+        worker(f);
     }
     return sum;
 }
