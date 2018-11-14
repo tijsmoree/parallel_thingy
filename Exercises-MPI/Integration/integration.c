@@ -44,11 +44,14 @@ double integrate(double (*f)(double x),
             x[1] = x_start + stepSize*(step+1);
             nextRank = step % (numProcs-1) + 1;
             // Receive the result
-            if (step > numProcs - 2) MPI_Recv(y, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD,
-                MPI_STATUS_IGNORE);
+            if (step > numProcs - 2) {
+                MPI_Recv(y, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                sum += stepSize*0.5*(y[0]+y[1]);
+            }
             // Send the work
-            if (step < maxSteps) MPI_Send(x, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
-            sum += stepSize*0.5*(y[0]+y[1]);
+            if (step < maxSteps) {
+                MPI_Send(x, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
+            }
         }
         // Signal workers to stop by sending empty messages with tag TAG_END
         for (nextRank = 1; nextRank < numProcs; nextRank++)
