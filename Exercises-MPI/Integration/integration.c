@@ -52,7 +52,7 @@ double controller(int chunk, double x_start, double x_end, int maxSteps) {
 }
 
 void worker(int chunk, double (*f)(double x)) {
-    double x[chunk], y = 0.0;
+    double x[chunk], y;
 
     MPI_Status status;
 
@@ -65,7 +65,7 @@ void worker(int chunk, double (*f)(double x)) {
         // compute but exit.
         MPI_Recv(x, chunk, MPI_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         if (status.MPI_TAG == TAG_END) break;
-        for (int i; i < chunk; i++)
+        for (int i, y = 0.0; i < chunk; i++)
             y += f(x[i]);
         // Send back the computed result
         MPI_Send(&y, 1, MPI_DOUBLE, 0, TAG_WORK, MPI_COMM_WORLD);
