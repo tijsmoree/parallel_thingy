@@ -54,7 +54,7 @@ double integrate(double (*f)(double x),
             MPI_Recv(y, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD,
                 MPI_STATUS_IGNORE);
             // Send the work
-            MPI_Send(x, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
+            if (step == maxSteps) MPI_Send(x, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
             sum += stepSize*0.5*(y[0]+y[1]);
         }
         // Signal workers to stop by sending empty messages with tag TAG_END
