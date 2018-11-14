@@ -69,7 +69,7 @@ void worker(int chunk, double (*f)(double x)) {
         for (int i; i < chunk; i++)
             y += f(x[i]);
         // Send back the computed result
-        MPI_Send(&y, chunk, MPI_DOUBLE, 0, TAG_WORK, MPI_COMM_WORLD);
+        MPI_Send(&y, 1, MPI_DOUBLE, 0, TAG_WORK, MPI_COMM_WORLD);
     }
 }
 
