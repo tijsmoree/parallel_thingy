@@ -37,21 +37,14 @@ double integrate(double (*f)(double x),
 
     if (myRank == 0)
     {
-        for (step = 0; step < numProcs - 1; step++)
-        {
-            x[0] = x_start + stepSize*step;
-            x[1] = x_start + stepSize*(step+1);
-            MPI_Send(x, 2, MPI_DOUBLE, step + 1, TAG_WORK, MPI_COMM_WORLD);
-        }
-
         // I am the controller, distribute the work
-        for (; step < maxSteps; step++)
+        for (step = 0; step < maxSteps + numProcs - 1; step++)
         {
             x[0] = x_start + stepSize*step;
             x[1] = x_start + stepSize*(step+1);
             nextRank = step % (numProcs-1) + 1;
             // Receive the result
-            MPI_Recv(y, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD,
+            if (step > numProcs - 2) MPI_Recv(y, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD,
                 MPI_STATUS_IGNORE);
             // Send the work
             if (step < maxSteps) MPI_Send(x, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
