@@ -30,7 +30,6 @@ double controller(int chunk, double x_start, double x_end, int maxSteps) {
     // I am the controller, distribute the work
     for (int step = 0; step < maxSteps + numProcs - 1; step += chunk)
     {
-        printf("%d\n", step);
         for (int i = 0; i < chunk; i++)
             x[i] = x_start + stepSize * (step + i);
         nextRank = step % (numProcs-1) + 1;
@@ -38,9 +37,10 @@ double controller(int chunk, double x_start, double x_end, int maxSteps) {
         if (step / chunk > numProcs - 2) {
             MPI_Recv(&y, 1, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             sum += stepSize * y;
+            printf("%d\n", step);
         }
         // Send the work
-        if (step < maxSteps - (chunk - 1) * numProcs) {
+        if (step / chunk < maxSteps) {
             MPI_Send(x, chunk, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
         }
     }
@@ -63,8 +63,7 @@ void worker(int chunk, double (*f)(double x)) {
         // Receive the left and right points of the trapezoid and compute
         // the corresponding function values. If the tag is TAG_END, don't
         // compute but exit.
-        MPI_Recv(x, chunk, MPI_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD,
-            &status);
+        MPI_Recv(x, chunk, MPI_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         if (status.MPI_TAG == TAG_END) break;
         for (int i; i < chunk; i++)
             y += f(x[i]);
