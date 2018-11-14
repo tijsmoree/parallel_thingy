@@ -40,7 +40,7 @@ double controller(int chunk, double x_start, double x_end, int maxSteps) {
             printf("%d\n", step);
         }
         // Send the work
-        if (step < maxSteps) {
+        if (step / chunk < maxSteps) {
             MPI_Send(x, chunk, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
         }
     }
