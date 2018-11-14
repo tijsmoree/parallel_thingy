@@ -30,13 +30,13 @@ double controller(int c, double x_start, double x_end, int maxSteps) {
     int i;
 
     // I am the controller, distribute the work
-    for (step = 0; step < maxSteps + numProcs - 1; step++)
+    for (step = 0; step < maxSteps + numProcs - 1; step+=c)
     {
         for (i = 0; i < c; i++)
             x[i] = x_start + stepSize*(step + i);
         nextRank = step % (numProcs-1) + 1;
         // Receive the result
-        if (step > numProcs - 2) {
+        if (step / c > numProcs - 2) {
             MPI_Recv(&y, 1, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             sum += 0.5*stepSize*y;
         }
