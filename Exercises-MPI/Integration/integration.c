@@ -17,7 +17,7 @@ double func(double x)
     return 4.0 / (1.0 + x*x);
 }
 
-double controller(double x_start, double x_end, int maxSteps) {
+double controller(int c, double x_start, double x_end, int maxSteps) {
     int numProcs;
     MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
 
@@ -27,21 +27,22 @@ double controller(double x_start, double x_end, int maxSteps) {
     double stepSize = (x_end - x_start)/(double)maxSteps;
     int step;
     int nextRank = 1;
+    int i;
 
     // I am the controller, distribute the work
     for (step = 0; step < maxSteps + numProcs - 1; step++)
     {
-        x[0] = x_start + stepSize*step;
-        x[1] = x_start + stepSize*(step+1);
+        for (i = 0; i < c; i++)
+            x[i] = x_start + stepSize*(step + i);
         nextRank = step % (numProcs-1) + 1;
         // Receive the result
         if (step > numProcs - 2) {
             MPI_Recv(&y, 1, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            sum += stepSize*y;
+            sum += 0.5*stepSize*y;
         }
         // Send the work
         if (step < maxSteps) {
-            MPI_Send(x, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
+            MPI_Send(x, c, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
         }
     }
     // Signal workers to stop by sending empty messages with tag TAG_END
@@ -51,7 +52,7 @@ double controller(double x_start, double x_end, int maxSteps) {
     return sum;
 }
 
-void worker(double (*f)(double x)) {
+void worker(int c, double (*f)(double x)) {
     double x[2], y;
 
     MPI_Status status;
@@ -63,16 +64,18 @@ void worker(double (*f)(double x)) {
         // Receive the left and right points of the trapezoid and compute
         // the corresponding function values. If the tag is TAG_END, don't
         // compute but exit.
-        MPI_Recv(x, 2, MPI_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD,
+        MPI_Recv(x, c, MPI_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD,
             &status);
         if (status.MPI_TAG == TAG_END) break;
-        y = f(x[0]) + f(x[1]);
+        for (i = 0, y = 0.0; i < c; i++)
+            y += f(x[i]);
         // Send back the computed result
         MPI_Send(&y, 1, MPI_DOUBLE, 0, TAG_WORK, MPI_COMM_WORLD);
     }
 }
 
-double integrate(double (*f)(double x),
+double integrate(int c,
+                 double (*f)(double x),
                  double x_start,
                  double x_end,
                  int maxSteps)
@@ -84,11 +87,11 @@ double integrate(double (*f)(double x),
 
     if (myRank == 0)
     {
-        sum = controller(x_start, x_end, maxSteps);
+        sum = controller(c, x_start, x_end, maxSteps);
     }
     else
     {
-        worker(f);
+        worker(c, f);
     }
     return sum;
 }
@@ -104,6 +107,7 @@ int main(int argc, char **argv)
     // Integration domain is [0, 1]
     double x0 = 0.0, x1 = 1.0;
     int maxSteps = 100;
+    int c = 2;
 
     if (myRank == 0)
     {
@@ -121,7 +125,7 @@ int main(int argc, char **argv)
 
     double startTime = MPI_Wtime();
 
-    double pi = integrate(func, x0, x1, maxSteps);
+    double pi = integrate(c, func, x0, x1, maxSteps);
 
     double stopTime = MPI_Wtime();
 
